@@ -1,5 +1,5 @@
 {
-  "name": "vue-demo",
+  "name": "photo-editor",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "core-js": "^3.16.1",
+    "cropperjs": "^1.5.12",
     "vue": "^2.6.14"
   },
   "devDependencies": {

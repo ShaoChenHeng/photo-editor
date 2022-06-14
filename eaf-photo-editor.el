@@ -30,7 +30,7 @@
 ;;; Code:
 
 ;;;###autoload
-(defun eaf-open-vue-demo ()
+(defun eaf-open-photo-editor ()
   "Open EAF vue demo"
   (interactive)
   (eaf-open "eaf-photo-editor" "photo-editor"))
@@ -40,10 +40,10 @@
   "The keybinding of EAF Vue demo."
   :type 'cons)
 
-(add-to-list 'eaf-app-binding-alist '("vue-demo" . eaf-vue-demo-keybinding))
+(add-to-list 'eaf-app-binding-alist '("photo-editor" . eaf-vue-demo-keybinding))
 
 (setq eaf-vue-demo-module-path (concat (file-name-directory load-file-name) "buffer.py"))
-(add-to-list 'eaf-app-module-path-alist '("vue-demo" . eaf-vue-demo-module-path))
+(add-to-list 'eaf-app-module-path-alist '("photo-editor" . eaf-vue-demo-module-path))
 
 (provide 'eaf-photo-editor)
 

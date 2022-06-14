@@ -26,3 +26,7 @@ class AppBuffer(BrowserBuffer):
         BrowserBuffer.__init__(self, buffer_id, url, arguments, False)
 
         self.load_index_html(__file__)
+
+    def init_app(self):
+        self.buffer_widget.eval_js_function('''addFiles''', '/home/scheng/asuka.png')
+        print("hello")
