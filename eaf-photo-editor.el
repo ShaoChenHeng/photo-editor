@@ -35,15 +35,17 @@
   (interactive)
   (eaf-open "eaf-photo-editor" "photo-editor"))
 
-(defcustom eaf-vue-demo-keybinding
-  '(("<f12>" . "open_devtools"))
-  "The keybinding of EAF Vue demo."
+(defcustom eaf-photo-editor-keybinding
+  '(("Q" . "rotate_image_clockwise_90")
+    ("E" . "rotate_image_counterclockwise_90")
+    ("<f12>" . "open_devtools"))
+  "The keybinding of EAF photo editor."
   :type 'cons)
 
-(add-to-list 'eaf-app-binding-alist '("photo-editor" . eaf-vue-demo-keybinding))
+(add-to-list 'eaf-app-binding-alist '("photo-editor" . eaf-photo-editor-keybinding))
 
-(setq eaf-vue-demo-module-path (concat (file-name-directory load-file-name) "buffer.py"))
-(add-to-list 'eaf-app-module-path-alist '("photo-editor" . eaf-vue-demo-module-path))
+(setq eaf-photo-editor-module-path (concat (file-name-directory load-file-name) "buffer.py"))
+(add-to-list 'eaf-app-module-path-alist '("photo-editor" . eaf-photo-editor-module-path))
 
 (provide 'eaf-photo-editor)
 
