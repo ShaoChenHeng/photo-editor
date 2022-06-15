@@ -38,6 +38,10 @@
 (defcustom eaf-photo-editor-keybinding
   '(("Q" . "rotate_image_clockwise_90")
     ("E" . "rotate_image_counterclockwise_90")
+    ("X" . "flip_x")
+    ("Y" . "flip_y")
+    ("Z" . "flip_xy")
+    ("D" . "js_draw_triangle")
     ("<f12>" . "open_devtools"))
   "The keybinding of EAF photo editor."
   :type 'cons)

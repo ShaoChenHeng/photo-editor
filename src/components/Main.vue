@@ -1,8 +1,23 @@
 <template>
   <div class="page">
-    <div class="container">
-      <img class="img" ref="image" :src="photo" alt="">
-    </div>
+    
+    <v-stage :config="configKonva">
+      
+      <v-layer>
+        <v-image :config="{
+                 image: image,
+                 draggable: true,
+                 x: offsetX,
+                 y: offsetY
+                 }" alt=""/>
+      </v-layer>
+      
+      <v-layer>
+        <v-circle :config="configCircle"></v-circle>
+      </v-layer>
+      
+    </v-stage>
+    
   </div>
 </template>
 
@@ -14,8 +29,24 @@
    data() {
      return {
        photo: '',
-       afterPhoto:'',
-       myCropper: null,
+       image: null,
+       stage: null,
+       windowWidth: window.innerWidth,
+       windowHeight: window.innerHeight,
+       offsetX: 0,
+       offsetY: 0,
+       configKonva: {
+         width: window.innerWidth,
+         height: window.innerHeight,
+       },
+       configCircle: {
+         x: 100,
+         y: 100,
+         radius: 70,
+         fill: "red",
+         stroke: "black",
+         strokeWidth: 4
+       }
      }
    },
    props: {
@@ -30,32 +61,21 @@
    },
    mounted() {
      window.addFiles = this.addFiles;
-     window.updateFiles = this.updateFiles;
-     window.rotate = this.rotate;
-     window.cleanFiles = this.cleanFiles;
-     window.rotateClockwise = this.rotateClockwise
-     window.rotateCounterclockwise = this.rotateCounterclockwise
    },
+   
    methods: {
      addFiles(path) {
        this.photo = path;
-       this.$forceUpdate()
+       const nImage = new window.Image();
+       nImage.src = this.photo;
        
+       nImage.onload = () => {
+         // set image only when it is loaded
+         this.offsetX = (this.windowWidth - nImage.width) / 2;
+         this.offsetY = (this.windowHeight - nImage.height) / 2;
+         this.image = nImage;
+       };
      },
-
-     updateFiles(photo) {
-       this.photo = photo;
-     },
-     
-     pyResize() {
-       this.pyobject.resize(2, 2);
-     },
-
-     cleanFiles() {
-       this.photo = '';
-     },
-     
-     
    }
  }
 </script>
@@ -71,6 +91,7 @@
    display: flex;
    flex-direction: column;
    justify-content: center;
+   background: #FFFF00;
  }
  
  .img {
@@ -78,7 +99,7 @@
    z-index: -1;
  }
 
- img {
+ v-image {
    display: block;
    max-height: 800px;
  }

@@ -69,7 +69,6 @@ class AppBuffer(BrowserBuffer):
     def rotate_image_counterclockwise_90(self):
         self.rotate(90)
 
-    @QtCore.pyqtSlot(int)
     def rotate(self, angel):
         h, w = self.current_handle_img.shape[:2]
         
@@ -89,11 +88,28 @@ class AppBuffer(BrowserBuffer):
 
         self.current_handle_img = img_rotated
         self.save_temp_image(img_rotated)
-        print(self.current_temp)
         self.buffer_widget.eval_js_function('''addFiles''', self.current_temp)
     # rotate end --->
 
+    # <--- flip begin
+    def flip_x(self):
+        self.flip(0)
 
+    def flip_y(self):
+        self.flip(1)
+
+    def flip_xy(self):
+        self.flip(-1)
+
+    def flip(self, direction):
+        img_fliped = cv2.flip(self.current_handle_img, direction)
+        
+        self.current_handle_img = img_fliped
+        self.save_temp_image(img_fliped)
+        print(self.current_temp)
+        self.buffer_widget.eval_js_function('''addFiles''', self.current_temp) 
+    # flip end--->
+    
     def handle_input_response(self, callback_tag, result_content):
         BrowserBuffer.handle_input_response(self, callback_tag, result_content)
 
