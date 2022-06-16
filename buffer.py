@@ -1,6 +1,6 @@
 import os
 import numpy as np
-import cv2, json, shutil
+import cv2, json, shutil, base64
 import time
 from json import dumps
 from PIL import Image
@@ -24,7 +24,7 @@ class AppBuffer(BrowserBuffer):
         self.ayanami1 = '/home/scheng/ayanami1.jpg'
         self.zafu = '/home/scheng/zafu.jpeg'
         
-        self.img = cv2.imread(self.asuka)
+        self.img = cv2.imread(self.ayanami)
         self.current_handle_img = self.img
         
         self.temp_image_dir = os.path.join(self.config_dir, "photo-editor", "temp")
@@ -64,6 +64,16 @@ class AppBuffer(BrowserBuffer):
         self.save_temp_image(img_resized)
         print(self.current_temp)
         self.buffer_widget.eval_js_function('''updateFiles''', self.current_temp)
+
+    
+    @QtCore.pyqtSlot(str)
+    def get_image_from_js(self, image_string):
+        image_string = image_string.replace('data:image/png;base64,', '')
+        image_data = base64.b64decode(image_string)
+        nparr = np.fromstring(image_data, np.uint8)
+        img_np = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        self.current_handle_image = img_np
+        self.save_temp_image(img_np)
         
     #<--- rotate begin 
     def rotate_image_clockwise_90(self):
