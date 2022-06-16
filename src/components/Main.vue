@@ -1,19 +1,19 @@
 <template>
   <div class="page">
-    
+    <p class="{color: 'white'}"> {{ number }} </p>
     <v-stage :config="configKonva">
       
       <v-layer>
-        <v-image :config="{
-                 image: image,
-                 draggable: true,
-                 x: offsetX,
-                 y: offsetY
-                 }" alt=""/>
+        <v-image
+          ref="image"
+          :config="{
+            image: image,
+            x: offsetX,
+            y: offsetY,}" alt=""/>
       </v-layer>
       
       <v-layer>
-        <v-circle :config="configCircle"></v-circle>
+        <v-wedge :config="cursor"></v-wedge>
       </v-layer>
       
     </v-stage>
@@ -23,6 +23,7 @@
 
 <script>
  import { QWebChannel } from "qwebchannel";
+ import Konva from 'konva';
  
  export default {
    name: 'Main',
@@ -35,10 +36,14 @@
        windowHeight: window.innerHeight,
        offsetX: 0,
        offsetY: 0,
+
+       number: 0,
+       
        configKonva: {
          width: window.innerWidth,
          height: window.innerHeight,
        },
+       
        configCircle: {
          x: 100,
          y: 100,
@@ -46,7 +51,9 @@
          fill: "red",
          stroke: "black",
          strokeWidth: 4
-       }
+       },
+
+       filters: [Konva.Filters.Noise]
      }
    },
    props: {
@@ -59,8 +66,18 @@
        this.pyobject = window.pyobject;
      });
    },
+   
    mounted() {
      window.addFiles = this.addFiles;
+     window.add = this.add;
+     window.minus = this.minus;
+     
+     const imageNode = this.$refs.image.getNode();
+     imageNode.cache();
+   },
+
+   updated() {
+     this.rgba(this.number);
    },
    
    methods: {
@@ -76,6 +93,153 @@
          this.image = nImage;
        };
      },
+
+     // basic
+     threshold(depth) {
+       const imageNode = this.$refs.image.getNode();
+       // may need to redraw layer manually
+       imageNode.cache();
+       imageNode.filters([Konva.Filters.Threshold]);
+       imageNode.threshold(depth * 0.005);
+     },
+
+     // basic
+     brighten(depth) {
+       const imageNode = this.$refs.image.getNode();
+       // may need to redraw layer manually
+       imageNode.cache();
+       imageNode.filters([Konva.Filters.Brighten]);
+       imageNode.brightness(depth * 0.01);
+     },
+
+     // filter
+     solarize() {
+       const imageNode = this.$refs.image.getNode();
+       // may need to redraw layer manually
+       imageNode.cache();
+       imageNode.filters([Konva.Filters.Solarize]);
+     },
+
+     // filter
+     sepia(depth) {
+       const imageNode = this.$refs.image.getNode();
+       // may need to redraw layer manually
+       imageNode.cache();
+       imageNode.filters([Konva.Filters.Sepia]);
+       imageNode.sepia(depth);
+       imageNode.threshold(depth * 0.1);
+     },
+
+     // basic
+     blur(depth) {
+       const imageNode = this.$refs.image.getNode();
+       // may need to redraw layer manually
+       imageNode.cache();
+       imageNode.filters([Konva.Filters.Blur]);
+       imageNode.blurRadius(depth);
+     },
+
+     // basic
+     pixelate(depth) {
+       const imageNode = this.$refs.image.getNode();
+       // may need to redraw layer manually
+       imageNode.cache();
+       imageNode.filters([Konva.Filters.Pixelate]);
+       imageNode.pixelSize(depth);
+     },
+
+     // basic
+     contrast(depth) {
+       const imageNode = this.$refs.image.getNode();
+       // may need to redraw layer manually
+       imageNode.cache();
+       imageNode.filters([Konva.Filters.Contrast]);
+       imageNode.contrast(depth);
+     },
+
+     // filter
+     grayscale() {
+       const imageNode = this.$refs.image.getNode();
+       // may need to redraw layer manually
+       imageNode.cache();
+       imageNode.filters([Konva.Filters.Grayscale]);
+     },
+
+     // filter or basic?
+     emboss(depth) {
+       const imageNode = this.$refs.image.getNode();
+       // may need to redraw layer manually
+       imageNode.cache();
+       imageNode.filters([Konva.Filters.Emboss]);
+       imageNode.embossStrength(0.7 + depth * 0.01);
+       imageNode.embossWhiteLevel(0.95 + depth * 0.01);
+       imageNode.embossDirection("left");
+     },
+
+     // basic
+     hsl(depth) {
+       const imageNode = this.$refs.image.getNode();
+       // may need to redraw layer manually
+       imageNode.cache();
+       imageNode.filters([Konva.Filters.HSL]);
+       imageNode.luminance(depth * 0.01);
+     },
+
+     // basic
+     hsv(depth) {
+       const imageNode = this.$refs.image.getNode();
+       // may need to redraw layer manually
+       imageNode.cache();
+       imageNode.filters([Konva.Filters.HSV]);
+       imageNode.value(depth * 0.01);
+     },
+
+     // basic
+     enhance(depth) {
+       const imageNode = this.$refs.image.getNode();
+       // may need to redraw layer manually
+       imageNode.cache();
+       imageNode.filters([Konva.Filters.Enhance]);
+       imageNode.enhance(depth * 0.1);
+     },
+
+     // filter
+     invert() {
+       const imageNode = this.$refs.image.getNode();
+       // may need to redraw layer manually
+       imageNode.cache();
+       imageNode.filters([Konva.Filters.Invert]);
+     },
+
+     // basic
+     noise(depth) {
+       const imageNode = this.$refs.image.getNode();
+       // may need to redraw layer manually
+       imageNode.cache();
+       imageNode.filters([Konva.Filters.Noise]);
+       imageNode.noise(depth * 0.01);
+     },
+
+     // basic
+     rgba(depth) {
+       const imageNode = this.$refs.image.getNode();
+       // may need to redraw layer manually
+       imageNode.cache();
+       console.log(imageNode);
+       imageNode.filters([Konva.Filters.RGBA]);
+       imageNode.alpha(depth * 0.01);
+     },
+
+     
+     
+     add() {
+       this.number = this.number + 2;
+     },
+
+     minus() {
+       this.number = this.number - 2;
+     }
+     
    }
  }
 </script>

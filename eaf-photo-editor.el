@@ -42,6 +42,8 @@
     ("Y" . "flip_y")
     ("Z" . "flip_xy")
     ("D" . "js_draw_triangle")
+    ("j" . "js_add")
+    ("k" . "js_minus")
     ("<f12>" . "open_devtools"))
   "The keybinding of EAF photo editor."
   :type 'cons)

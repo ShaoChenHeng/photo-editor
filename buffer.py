@@ -20,6 +20,9 @@ class AppBuffer(BrowserBuffer):
 
         # self.asuka = os.path.abspath("/home/scheng/asuka.png")
         self.asuka = '/home/scheng/asuka.png'
+        self.ayanami = '/home/scheng/ayanami.jpg'
+        self.ayanami1 = '/home/scheng/ayanami1.jpg'
+        self.zafu = '/home/scheng/zafu.jpeg'
         
         self.img = cv2.imread(self.asuka)
         self.current_handle_img = self.img
