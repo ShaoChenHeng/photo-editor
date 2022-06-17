@@ -41,10 +41,8 @@
     ("X" . "flip_x")
     ("Y" . "flip_y")
     ("Z" . "flip_xy")
-    ("D" . "js_draw_triangle")
     ("j" . "js_add")
     ("k" . "js_minus")
-    ("C-l" . "js_test")
     ("S"   . "js_save")
     ("<f12>" . "open_devtools"))
   "The keybinding of EAF photo editor."

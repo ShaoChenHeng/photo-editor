@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import cv2, json, shutil, base64
+from scipy.interpolate import UnivariateSpline
 import time
 from json import dumps
 from PIL import Image
@@ -13,6 +14,9 @@ from core.utils import (eval_in_emacs, PostGui, get_emacs_vars,
                         get_emacs_func_result, get_emacs_config_dir, 
                         touch, get_emacs_var)
 
+def LookupTable(x, y):
+    spline = UnivariateSpline(x, y)
+    return spline(range(256))
 
 class AppBuffer(BrowserBuffer):
     def __init__(self, buffer_id, url, arguments):
@@ -24,7 +28,7 @@ class AppBuffer(BrowserBuffer):
         self.ayanami1 = '/home/scheng/ayanami1.jpg'
         self.zafu = '/home/scheng/zafu.jpeg'
         
-        self.img = cv2.imread(self.ayanami)
+        self.img = cv2.imread(self.zafu)
         self.current_handle_img = self.img
         
         self.temp_image_dir = os.path.join(self.config_dir, "photo-editor", "temp")
@@ -39,7 +43,7 @@ class AppBuffer(BrowserBuffer):
         
 
     def init_app(self):
-        self.buffer_widget.eval_js_function('''addFiles''', self.asuka)
+        self.buffer_widget.eval_js_function('''addFiles''', self.zafu)
 
         
     def clean_temp_image(self):
@@ -74,6 +78,47 @@ class AppBuffer(BrowserBuffer):
         img_np = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
         self.current_handle_image = img_np
         self.save_temp_image(img_np)
+
+    @QtCore.pyqtSlot()
+    def pencil(self):
+        def pencile_sketch_col(img):
+            sk_gray, sk_color, = cv2.pencilSketch(img, sigma_s = 60, sigma_r = 0.07, shade_factor = 0.1)
+            return sk_color
+        
+        pencil_image = pencile_sketch_col(self.current_handle_img)
+        self.current_handle_img = pencil_image
+        self.save_temp_image(pencil_image)
+        self.buffer_widget.eval_js_function('''addFiles''', self.current_temp)
+
+    @QtCore.pyqtSlot()
+    def winter(self):
+        def winter_filter(img):
+            increaseLookupTable = LookupTable([0, 64, 128, 256], [0, 80, 160, 256])
+            decreaseLookupTable = LookupTable([0, 64, 128, 256], [0, 80, 100, 256])
+            blue_channel, green_channel, red_channel = cv2.split(img)
+            red_channel = cv2.LUT(red_channel, decreaseLookupTable).astype(np.uint8)
+            blue_channel = cv2.LUT(blue_channel, increaseLookupTable).astype(np.uint8)
+            win = cv2.merge((blue_channel, green_channel, red_channel))
+            return win
+        winter_image = winter_filter(self.current_handle_img)
+        self.current_handle_img = winter_image
+        self.save_temp_image(winter_image)
+        self.buffer_widget.eval_js_function('''addFiles''', self.current_temp)
+    @QtCore.pyqtSlot()
+    def summer(self):
+        def summer_filter(img):
+            increaseLookupTable = LookupTable([0, 64, 128, 256], [0, 80, 160, 256])
+            decreaseLookupTable = LookupTable([0, 64, 128, 256], [0, 50, 100, 256])
+            blue_channel, green_channel, red_channel = cv2.split(img)
+            red_channel = cv2.LUT(red_channel, increaseLookupTable).astype(np.uint8)
+            blue_channel = cv2.LUT(blue_channel, decreaseLookupTable).astype(np.uint8)
+            summ = cv2.merge((blue_channel, green_channel, red_channel))
+            return summ
+        
+        summer_image = summer_filter(self.current_handle_img)
+        self.current_handle_img = summer_image
+        self.save_temp_image(summer_image)
+        self.buffer_widget.eval_js_function('''addFiles''', self.current_temp)
         
     #<--- rotate begin 
     def rotate_image_clockwise_90(self):

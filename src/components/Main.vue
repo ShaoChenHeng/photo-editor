@@ -1,22 +1,56 @@
 <template>
   <div class="page">
     <div class="container" ref="container">
-    <p class="{color: 'white'}"> {{ number }} </p>
-    
     <v-stage ref="stage" :config="configKonva">
       <v-layer ref="layer">
-        <v-image
-          ref="image"
-          :config="{
-            x: offsetX,
-            y: offsetY}" alt=""/>
+        <v-image ref="image" :config="{image}" alt=""/>
       </v-layer>
     </v-stage>
     
     </div>
-    <div class="bar3"> 具体 </div>
-    <div class="bar2"> 刻度 </div>
-    <div class="bar1"> 选择 </div>
+    <div class="cont">
+    <div v-if="isBasic" class="bar3">
+      <button class="block"> 对比度 </button>
+      <button class="block"> 增强 </button>
+      <button class="block"> 噪点 </button>
+      <button class="block"> HSL </button>
+      <button class="block"> HSV </button>
+      <button class="block1 light"> 遮盖 </button>
+      <button class="block"> Invert </button>
+      <button class="block"> 素描 </button>
+      <button class="block"> 阈值 </button>
+      <button class="block"> 模糊 </button>
+      <button class="block"> 像素化 </button>
+      
+    </div>
+    <div v-if="isFilters" class="bar3">
+      <button class="block"> Grayscale </button>
+      <button class="block"> Sepia </button>
+      <button class="block"> Solarize </button>
+      <button class="block"> Invert </button>
+      <button class="block"> Sharp </button>
+      <button class="block"> Pencil </button>
+      <button class="block1 light"> Summer </button>
+      <button class="block"> Cold </button>
+    </div>
+     <div v-if="isTrim" class="bar3">
+      <button class="block"> 旋转 </button>
+      <button class="block"> 翻转 </button>
+      <button class="block"> 裁剪 </button>
+      <button class="block1 light"> 缩放 </button>
+     </div>
+    </div>
+    
+    <div class="bar2">
+      <div class="under-bar-left"> </div>
+      <div class="under-bar-right"> </div>
+    </div>
+    
+    <div class="global-bar">
+      <button class="basic global-button"> 调整 </button>
+      <button class="filters global-button1 light"> 滤镜 </button>
+      <button class="trim global-button" > 修整 </button>
+    </div>
     
   </div>
 </template>
@@ -38,6 +72,9 @@
        offsetY: 0,
 
        number: 0,
+       isFilters: true,
+       isBasic: false,
+       isTrim: false,
        
        configKonva: {
          width: window.innerWidth,
@@ -70,18 +107,16 @@
      window.addFiles = this.addFiles;
      window.add = this.add;
      window.minus = this.minus;
-     window.test = this.test;
+     window.rotate = this.rotate;
      window.save = this.save;
-     
-     console.log(this.$refs.container.width);
-     
+     window.noise = this.noise;
      
      const imageNode = this.$refs.image.getNode();
      imageNode.cache();
    },
 
    updated() {
-     this.mask(this.number)
+     
    },
 
    watch: {
@@ -95,22 +130,24 @@
          let height = nImage.height;
          let width = nImage.width;
          let ratio = 1;
-         if (width > this.configKonva.width ||
-             height * 1.0 > this.configKonva.height) {
+         if (width  > this.configKonva.width ||
+             height > this.configKonva.height) {
            ratio = Math.min(this.configKonva.width * 1.0/ width,
                             this.configKonva.height * 1.0/ height);
          }
          
          imageNode.x(Math.abs(this.configKonva.width - width * ratio) / 2);
          imageNode.y(Math.abs(this.configKonva.height - height * ratio) / 2);
-         
          imageNode.scaleX(ratio);
          imageNode.scaleY(ratio);
+         console.log(height);
+         console.log(width)
        };
-       // imageNode.image(nImage);
-       // console.log(nImage.height);
-       // console.log(nImage.width);
+       
+     },
 
+     "number": function() {
+       this.summer();
      }
    },
    
@@ -240,6 +277,7 @@
      noise(depth) {
        const imageNode = this.$refs.image.getNode();
        // may need to redraw layer manually
+       console.log('here');
        imageNode.cache();
        imageNode.filters([Konva.Filters.Noise]);
        imageNode.noise(depth * 0.01);
@@ -257,26 +295,59 @@
      // basic
      rotate() {
        const imageNode = this.$refs.image.getNode();
-       imageNode.cache();
+       // imageNode.cache();
        //var endRadius = imageNode.fillRadialGradientEndRadius();
 
        // set radial gradient end radius
 
        // imageNode.fillPatternRotation(20);
-       imageNode.offset(100);
-       imageNode.rotate(90);
+       
        // imageNode.width(imageNode.height());
        // imageNode.height(imageNode.width());
-       let height = imageNode.height();
-       let width = imageNode.width();
-       console.log(height);
-       console.log(width);
+       // let height = imageNode.height();
+       // let width = imageNode.width();
        
-       console.log(imageNode.x());
-       console.log(imageNode.y());
+       
+       
+       imageNode.offsetX(imageNode.width() / 2);
+       imageNode.offsetY(imageNode.height() / 2);
+       imageNode.rotate(90);
+       console.log(imageNode.offsetX());
+       console.log(imageNode.offsetY());
+       let width = imageNode.width();
+       let height = imageNode.height();
+       let ratio = 1;
+       if (width  > this.configKonva.width ||
+           height > this.configKonva.height) {
+         ratio = Math.min(this.configKonva.width * 1.0/ width,
+                          this.configKonva.height * 1.0/ height);
+       }
        console.log('here');
+       imageNode.x(700);
+       imageNode.y(500);
+       imageNode.scaleX(ratio);
+       imageNode.scaleY(ratio);
        // imageNode.offsetX((this.windowWidth - imageNode.width()) / 2);
        // imageNode.offsetY((this.windowHeight - imageNode.height()) / 2);
+     },
+
+     scale(depth) {
+       const imageNode = this.$refs.image.getNode();
+       imageNode.cache();
+       imageNode.scaleX(1 + depth * 0.01);
+       imageNode.scaleY(1 + depth * 0.01);
+     },
+
+     pencil() {
+       this.pyobject.pencil();
+     },
+
+     winter() {
+       this.pyobject.winter();
+     },
+
+     summer() {
+       this.pyobject.summer();
      },
 
      add() {
@@ -308,32 +379,113 @@
 
  .container{
    display: flex;
-   background: #5d5d5d;
+ }
+
+ .light {
+   background: #AAA2FF;
+ }
+
+ .block1 {
+   margin-left: 15px;
+   height: 60px;
+   width: 120px;
+   border-radius: 10px;
+   color: white;
+   font-size: 22px;
+   font-weight: bold;
  }
  
- .bar3{
-   background: #eF7342;
+ .block {
+   margin-left: 15px;
    height: 60px;
-   width: 360px;
-   align-items: center;
-   justify-content: center;
- }
-
- .bar2{
+   width: 120px;
+   border-radius: 10px;
    background: #5d5d5d;
-   height: 60px;
-   width:360px;
+   color: white;
+   font-size: 22px;
+   font-weight: bold;
+ }
+ 
+ .cont {
+   overflow: scroll;
+   text-overflow: ellipsis;
+   width: 1500px;
+   margin: 0 auto;
+ }
+
+ .bar3 {   
    align-items: center;
+   flex-direction: row;
+   display: inline-flex;
+ }
+
+ .under-bar-right {
+   background: #5d5d5d;
+   width: 200px;
+   height: 5px;
+ }
+
+ .under-bar-left {
+   
+   background: #5d5d5d;
+   width: 200px;
+   height: 5px;
+ }
+ 
+ .bar2 {
+   margin-top: 10px;
+   margin-bottom: 10px;
+   margin-left: 50px;
+   margin-right: 50px;
+   background: #5d5d5d;
+   display: inline-flex;
+   flex-direction: row;
    justify-content: center;
  }
 
- .bar1{
-   background: #eFdd32;
-   height: 30px;
+ .global-bar {
+   height: 40px;
    width: 360px;
+   display: flex;
+   text-align: center;
    align-items: center;
    justify-content: center;
    
+   margin: 0 auto;
+ }
+
+ .global-button {
+   display: flex;
+   color: white;
+   background: #5d5d5d;
+   
+   flex: 1;
+   font-size: 20px;
+   font-weight: bold;
+   
+   justify-content: center;
+   align-items: center;
+   margin-left: 8px;
+   margin-right: 8px;
+
+   border-radius: 10px;
+ }
+
+ .global-button1 {
+   display: flex;
+   color: white;
+   background: #AAA2FF;
+   
+   flex: 1;
+   font-size: 20px;
+   font-weight: bold;
+   
+   justify-content: center;
+   align-items: center;
+   margin-left: 8px;
+   margin-right: 8px;
+
+   border-radius: 10px;
  }
 </style>
 
